@@ -75,3 +75,40 @@ export const comparePassword = async(email : string, supplied_password : string)
     }
     return user
 }
+
+export const update =async (id:string, updateValues : User) : Promise<UnitUser | null> =>{
+
+    const userExists = await findOne(id)
+
+    if (!userExists){
+        return null
+    }
+
+    if(updateValues.password){
+        const salt = await bcrypt.genSalt[10]
+        const newPass = await bcrypt.hash[updateValues.password, salt]
+
+        updateValues.password = newPass
+    }
+
+    users[id] = {
+        ...userExists,
+        ...updateValues
+    }
+
+    saveUsers()
+
+    return users[id]
+}
+
+export const remove = async (id : string) : Promise<null | void> => {
+    const user = await findOne(id)
+
+    if(!user){
+        return null
+    }
+
+    delete users[id]
+
+    saveUsers()
+}
